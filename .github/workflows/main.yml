@@ -15,7 +15,7 @@ jobs:
       - name: Run a one-line script 
         run: |
           cd
-          cd ./dev/flutter/flutter_app
+          cd /home/ubuntu/dev/flutter/flutter_app
           git checkout master
           git pull
           flutter build web --release
