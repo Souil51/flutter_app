@@ -1,0 +1,25 @@
+name: CI
+
+on: 
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run a one-line script 
+        run: |
+          cd
+          cd ./dev/flutter/flutter_app
+          git checkout master
+          git pull
+          flutter build web --release
+          echo "Built"
+          sudo cp -r /var/www/flutter_app/* /var/www/backup/flutter_app/
+          sudo cp -r ./dist/production/* /var/www/flutter_app/
+          sudo nginx -s reload
