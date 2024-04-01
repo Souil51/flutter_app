@@ -19,7 +19,7 @@ jobs:
           git checkout master
           git pull
           flutter build web --release
-          echo "Built"
+          echo "Built flutter app"
           sudo cp -r /var/www/flutter_app/* /var/www/backup/flutter_app/
           sudo cp -r ./dist/production/* /var/www/flutter_app/
           sudo nginx -s reload
