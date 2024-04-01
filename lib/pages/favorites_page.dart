@@ -6,43 +6,54 @@ class Favorites extends StatelessWidget {
   @override
   Widget build(BuildContext context){
     var appState = context.watch<MyAppState>();
+    final theme = Theme.of(context);
 
     if(appState.favorites.isEmpty){
       return Center(
         child: Text("You have no favorite"),
       );
     }else{
-      return Center(
-        child: ListView
-              (
-                shrinkWrap: true,
-                children: [
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Text('You ${appState.favorites.length} have favorites:'),
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text
+            (
+              "You ${appState.favorites.length} have favorites:"
+            ),
+          ),
+          Wrap
+          (
+            direction: Axis.horizontal,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            alignment: WrapAlignment.start,
+            runAlignment: WrapAlignment.start,
+            spacing: 8.0,
+            runSpacing: 8.0,
+            children: [
+              for(var item in appState.favorites)
+              SizedBox(
+                width: 200.0,
+                child: Row
+                (
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.delete),
+                      tooltip: "Delete from your favorites",
+                      onPressed: () {
+                        appState.deleteFavorite(item);
+                      },
+                      color: theme.colorScheme.primary
                     ),
-                  ),
-                  for(var item in appState.favorites)
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.favorite),
-                            SizedBox(width: 10),
-                            Text(item.asLowerCase)
-                          ],)
-                        // ListTile
-                        // (
-                        //   leading: Icon(Icons.favorite),
-                        //   title: Center(child: Text(item.asLowerCase)),
-                        // ),
-                      ],
-                    )
-                ], // liste.map((x) => Text(x)).toList(),
-              ),
+                    Text(item.asLowerCase)
+                  ],
+                )
+              )
+            ],
+          ),
+        ],
       );
     }
   }

@@ -47,6 +47,13 @@ class MyAppState extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void deleteFavorite(WordPair item){
+    if (favorites.contains(item)) {
+      favorites.remove(item);
+    }
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -59,14 +66,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    appState.toggleFavorite();
-    appState.getNext();
-    appState.toggleFavorite();
-    appState.getNext();
-    appState.toggleFavorite();
-    appState.getNext();
-
     Widget page;
     switch (selectedIndex) {
       case 0:
