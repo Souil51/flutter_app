@@ -1,7 +1,9 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_app/my_animated_list.dart';
+import 'package:flutter_app/widgets/my_animated_list.dart';
+import 'package:flutter_app/pages/generator_page.dart';
+import 'package:flutter_app/pages/favorites_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,7 +17,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
-        title: 'Namer App',
+        title: 'Flutter App',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
-  final GlobalKey<MyAnimatedListState> _listKey = GlobalKey<MyAnimatedListState>(); 
+  final GlobalKey<MyAnimatedListState> listKey = GlobalKey<MyAnimatedListState>(); 
 
   void getNext() {
     current = WordPair.random();
@@ -53,10 +55,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var selectedIndex = 0;
+  var selectedIndex = 1;
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    appState.toggleFavorite();
+    appState.getNext();
+    appState.toggleFavorite();
+    appState.getNext();
+    appState.toggleFavorite();
+    appState.getNext();
+
     Widget page;
     switch (selectedIndex) {
       case 0:
@@ -105,148 +115,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         );
       }
-    );
-  }
-}
-
-class GeneratorPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    var pair = appState.current;
-
-    IconData icon;
-    if (appState.favorites.contains(pair)) {
-      icon = Icons.favorite;
-    } else {
-      icon = Icons.favorite_border;
-    }
-
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          MyAnimatedList(key: appState._listKey),
-          BigCard(pair: pair),
-          SizedBox(height: 10),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () {
-                  appState.toggleFavorite();
-                },
-                icon: Icon(icon),
-                label: Text('Like'),
-              ),
-              SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () {
-                  bool isFavorite = appState.favorites.contains(pair);
-                  appState._listKey.currentState!.addItem(pair.asLowerCase, isFavorite);
-                  appState.getNext();
-                },
-                child: Text('Next'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class Favorites extends StatelessWidget {
-  @override
-  Widget build(BuildContext context){
-    var appState = context.watch<MyAppState>();
-
-    if(appState.favorites.isEmpty){
-      return Center(
-        child: Text("You have no favorite"),
-      );
-    }else{
-      return Center(
-        child: ListView
-              (
-                shrinkWrap: true,
-                children: [
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Text('You ${appState.favorites.length} have favorites:'),
-                    ),
-                  ),
-                  for(var item in appState.favorites)
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.favorite),
-                            SizedBox(width: 10),
-                            Text(item.asLowerCase)
-                          ],)
-                        // ListTile
-                        // (
-                        //   leading: Icon(Icons.favorite),
-                        //   title: Center(child: Text(item.asLowerCase)),
-                        // ),
-                      ],
-                    )
-                ], // liste.map((x) => Text(x)).toList(),
-              ),
-      );
-    }
-  }
-}
-
-class BigCard extends StatelessWidget {
-  const BigCard({
-    super.key,
-    required this.pair,
-  });
-
-  final WordPair pair;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,
-      fontWeight: FontWeight.w100,
-    );
-    final secondStyle = style.copyWith(
-      fontWeight: FontWeight.w900,
-    );
-
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.5,
-      child: Card(
-        color: theme.colorScheme.primary,
-        elevation: 10,
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text
-              (
-                pair.first,
-                style: style,
-                semanticsLabel: pair.first,
-              ),
-              Text
-              (
-                pair.second,
-                style: secondStyle,
-                semanticsLabel: pair.second,
-              )
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
