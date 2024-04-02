@@ -18,6 +18,7 @@ jobs:
           cd /home/ubuntu/dev/flutter/flutter_app
           git checkout master
           git pull
+          flutter pub get
           flutter build web --release
           echo "Built flutter app"
           sudo cp -r /var/www/flutter_app/* /var/www/backup/flutter_app/
