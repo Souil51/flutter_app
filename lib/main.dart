@@ -1,11 +1,15 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/model/favoris.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_app/widgets/my_animated_list.dart';
 import 'package:flutter_app/pages/generator_page.dart';
 import 'package:flutter_app/pages/favorites_page.dart';
+import 'package:flutter_app/services/api_service.dart' as api_service;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 
@@ -30,7 +34,13 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
-  final GlobalKey<MyAnimatedListState> listKey = GlobalKey<MyAnimatedListState>(); 
+  late Future<List<Favoris>> futureFavoris;
+  final GlobalKey<MyAnimatedListState> listKey = GlobalKey<MyAnimatedListState>();
+  var service = api_service.ApiService();
+
+  MyAppState(){
+    loadFavorites();
+  }
 
   void getNext() {
     current = WordPair.random();
@@ -39,20 +49,29 @@ class MyAppState extends ChangeNotifier {
 
   var favorites = <WordPair>[];
 
-  void toggleFavorite(){
+  void addFavorite() async {
     if (favorites.contains(current)){
       favorites.remove(current);
     } else {
       favorites.add(current);
     }
+    await service.addFavoris(Favoris(id: 0, valeur: current.asLowerCase));
+    loadFavorites();
     notifyListeners();
   }
 
-  void deleteFavorite(WordPair item){
-    if (favorites.contains(item)) {
-      favorites.remove(item);
+  void deleteFavorite(Favoris fav) async {
+    var pairs = favorites.where((x) => x.asLowerCase == fav.valeur).toList();
+    if (pairs.isNotEmpty) {
+      favorites.remove(pairs[0]);
     }
+    await service.deleteFavoris(fav);
+    loadFavorites();
     notifyListeners();
+  }
+
+  void loadFavorites(){
+    futureFavoris = service.fetchFavoris();
   }
 }
 

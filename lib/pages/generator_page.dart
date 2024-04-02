@@ -46,7 +46,8 @@ class GeneratorPage extends StatelessWidget {
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
-                        appState.toggleFavorite();
+                        // appState.toggleFavorite();
+                        appState.addFavorite();
                       },
                       icon: Icon(icon),
                       label: Text('Like'),
